@@ -14,14 +14,15 @@
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            height: 100vh;
+            /* แก้ไข 1: ใช้ dvh เพื่อป้องกัน Browser Bar บังด้านล่าง */
+            height: 100dvh; 
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* ซ่อน Scrollbar ของ Body หลัก */
+            overflow: hidden; 
             background-color: #ecf0f1;
         }
 
-        /* --- Mobile Header (แสดงเฉพาะมือถือ) --- */
+        /* --- Mobile Header --- */
         .mobile-header {
             display: none;
             background-color: #2c3e50;
@@ -41,16 +42,16 @@
             cursor: pointer;
         }
 
-        /* --- Container หลัก --- */
+        /* --- Wrapper --- */
         .wrapper {
             display: flex;
             flex: 1;
-            height: 100%;
+            height: 100%; /* จะปรับตาม body ที่เป็น dvh */
             overflow: hidden;
             position: relative;
         }
         
-        /* --- 1. Sidebar (เมนูด้านซ้าย) --- */
+        /* --- Sidebar --- */
         .sidebar {
             width: 240px;
             background-color: #2c3e50;
@@ -70,7 +71,6 @@
             border-bottom: 1px solid #34495e;
         }
         
-        /* ปุ่มเมนู */
         .tab-btn {
             padding: 15px 20px;
             cursor: pointer;
@@ -98,23 +98,25 @@
             text-align: center;
         }
 
-        /* --- 2. Main Content (พื้นที่แสดงกราฟ) --- */
+        /* --- Main Content --- */
         .main-content {
             flex-grow: 1;
             background-color: #ecf0f1;
             position: relative;
             width: 100%;
             height: 100%;
-            /* ปรับปรุง: ให้ Scroll ได้ถ้าเนื้อหายาวเกินจอมือถือ */
             overflow-y: auto; 
             -webkit-overflow-scrolling: touch;
+            /* แก้ไข 2: เพิ่มพื้นที่ว่างด้านล่าง 50px เพื่อดัน Tabs ของ Power BI ขึ้นมา */
+            padding-bottom: 50px; 
         }
         
-        /* กล่องใส่ iframe */
         .report-container {
             display: none;
             width: 100%;
-            height: 100%;
+            /* แก้ไข 3: ให้ความสูงยืดหยุ่น ถ้ากราฟยาว */
+            height: 100%; 
+            min-height: 100%;
         }
         .report-container.active {
             display: block;
@@ -124,11 +126,10 @@
             width: 100%;
             height: 100%;
             border: none;
-            /* ปรับปรุง: ป้องกัน iframe ขาวโพลน */
             background-color: #ffffff; 
         }
 
-        /* --- Responsive Styles (สำหรับมือถือ) --- */
+        /* --- Responsive --- */
         @media (max-width: 768px) {
             body {
                 flex-direction: column;
@@ -160,10 +161,6 @@
             .overlay.show {
                 display: block;
             }
-            /* ปรับให้ iframe สูงขึ้นเล็กน้อยบนมือถือถ้าจำเป็น */
-            .main-content {
-                padding-bottom: 50px; /* เว้นที่ด้านล่างหน่อย */
-            }
         }
     </style>
 </head>
@@ -180,9 +177,7 @@
         <div class="overlay" onclick="toggleSidebar()"></div>
 
         <div class="sidebar" id="mySidebar">
-            <div class="sidebar-header">
-                MENU
-            </div>
+            <div class="sidebar-header">MENU</div>
             
             <button class="tab-btn active" onclick="openTab(event, 'SalesRevenues')">
                 <i class="fas fa-chart-line"></i> SalesRevenues
@@ -210,7 +205,6 @@
         </div>
 
         <div class="main-content">
-
             <div id="SalesRevenues" class="report-container active">
                 <iframe title="PBI - SalesRevenues" 
                     src="https://app.powerbi.com/reportEmbed?reportId=e192d3f7-9074-46d1-8da5-1facd94bf499&autoAuth=true&ctid=5d7ef17f-affc-45f4-a3ce-3379dfb2c5ef&navContentPaneEnabled=true&filterPaneEnabled=false" 
@@ -257,24 +251,17 @@
 
     <script>
         function openTab(evt, tabName) {
-            // 1. ซ่อน Report ทั้งหมด
             var i, tabcontent, tablinks;
             tabcontent = document.getElementsByClassName("report-container");
             for (i = 0; i < tabcontent.length; i++) {
                 tabcontent[i].classList.remove("active");
             }
-
-            // 2. เอาสถานะ active ออกจากปุ่มทั้งหมด
             tablinks = document.getElementsByClassName("tab-btn");
             for (i = 0; i < tablinks.length; i++) {
                 tablinks[i].classList.remove("active");
             }
-
-            // 3. แสดง Report ที่เลือก และใส่สีปุ่ม
             document.getElementById(tabName).classList.add("active");
             evt.currentTarget.classList.add("active");
-
-            // 4. ถ้าเป็นมือถือ ให้ปิดเมนูหลังจากกดเลือกแล้ว
             if (window.innerWidth <= 768) {
                 toggleSidebar();
             }
@@ -283,11 +270,9 @@
         function toggleSidebar() {
             var sidebar = document.getElementById("mySidebar");
             var overlay = document.querySelector(".overlay");
-            
             sidebar.classList.toggle("show");
             overlay.classList.toggle("show");
         }
     </script>
-
 </body>
 </html>
