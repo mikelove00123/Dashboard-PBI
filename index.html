@@ -14,8 +14,7 @@
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* ใช้ 100dvh เพื่อแก้ปัญหา Browser Bar บนมือถือบังด้านล่าง */
-            height: 100dvh; 
+            height: 100dvh; /* ใช้ 100dvh เพื่อแก้ปัญหา Browser Bar บนมือถือ */
             display: flex;
             flex-direction: column;
             overflow: hidden; 
@@ -24,7 +23,7 @@
 
         /* --- Mobile Header (แสดงเฉพาะมือถือ) --- */
         .mobile-header {
-            display: none; /* ซ่อนบน PC */
+            display: none;
             background-color: #2c3e50;
             color: white;
             padding: 10px 15px;
@@ -54,15 +53,15 @@
         
         /* --- Sidebar (เมนูด้านซ้าย) --- */
         .sidebar {
-            width: 250px; /* ความกว้างเมนู */
+            width: 250px;
             background-color: #2c3e50;
             color: white;
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
-            transition: all 0.3s ease; /* Animation เลื่อนนุ่มๆ */
+            transition: margin-left 0.3s ease; /* Animation การเลื่อน */
             z-index: 1000;
-            white-space: nowrap; /* ป้องกันข้อความแตกบรรทัดตอนพับ */
+            white-space: nowrap;
         }
         
         /* Class สำหรับซ่อนเมนูบน PC */
@@ -70,19 +69,37 @@
             margin-left: -250px; /* ดึงเมนูหลบไปทางซ้าย */
         }
 
+        /* Header ของ Sidebar (แก้ไขตามโจทย์) */
         .sidebar-header {
-            padding: 20px;
+            padding: 0 15px; /* ลด padding บนล่าง ใช้ flex จัดกึ่งกลางแทน */
             background-color: #1a252f;
-            text-align: center;
-            font-size: 1.2rem;
+            color: white;
+            font-size: 1.1rem;
             font-weight: bold;
             border-bottom: 1px solid #34495e;
+            height: 50px; /* กำหนดความสูงแน่นอน */
             display: flex;
-            justify-content: center;
+            justify-content: space-between; /* ให้ MENU อยู่ซ้าย ลูกศรอยู่ขวา */
             align-items: center;
-            height: 60px;
+        }
+
+        /* ปุ่มลูกศรซ่อนเมนู (ใน Sidebar) */
+        .sidebar-toggle-btn {
+            background: none;
+            border: none;
+            color: #bdc3c7;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 5px;
+            transition: 0.3s;
+        }
+        .sidebar-toggle-btn:hover {
+            color: white;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 4px;
         }
         
+        /* ปุ่มเมนู */
         .tab-btn {
             padding: 15px 20px;
             cursor: pointer;
@@ -111,37 +128,38 @@
             text-align: center;
         }
 
-        /* --- Main Content (พื้นที่แสดงกราฟ) --- */
+        /* --- Main Content --- */
         .main-content {
             flex-grow: 1;
             background-color: #ffffff;
             position: relative;
             width: 100%;
             height: 100%;
-            overflow: hidden; /* ห้าม Scroll ที่ div นี้ ให้ไป Scroll ใน iframe แทน */
-            padding: 0; /* สำคัญ! ลบขอบขาวออกทั้งหมดตามที่ขอ */
+            overflow: hidden;
+            padding: 0; 
         }
 
-        /* ปุ่มซ่อน/แสดงเมนู สำหรับ PC */
-        .desktop-toggle-btn {
+        /* ปุ่มเปิดเมนู (แสดงเมื่อเมนูถูกซ่อนบน PC) */
+        .show-sidebar-btn {
             position: absolute;
-            top: 10px; /* ปรับตำแหน่งปุ่มตามใจชอบ */
-            left: 10px; /* ปรับตำแหน่งปุ่มตามใจชอบ */
-            z-index: 999;
-            background-color: rgba(44, 62, 80, 0.8);
+            top: 10px;
+            left: 0; /* ติดขอบซ้าย */
+            z-index: 900;
+            background-color: #2c3e50;
             color: white;
             border: none;
-            border-radius: 4px;
-            padding: 8px 12px;
+            border-radius: 0 4px 4px 0; /* มนเฉพาะด้านขวา */
+            padding: 10px 8px;
             cursor: pointer;
             transition: 0.3s;
-            display: block; /* แสดงบน PC */
+            display: none; /* ซ่อนไว้ก่อน จะโชว์ด้วย JS */
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
         }
-        .desktop-toggle-btn:hover {
-            background-color: rgba(44, 62, 80, 1);
+        .show-sidebar-btn:hover {
+            background-color: #34495e;
+            width: 40px; /* ยื่นออกมาเมื่อเอาเมาส์จี้ */
         }
         
-        /* กล่องใส่ iframe */
         .report-container {
             display: none;
             width: 100%;
@@ -155,30 +173,30 @@
             width: 100%;
             height: 100%;
             border: none;
-            display: block; /* แก้ Bug ขอบขาวด้านล่าง */
+            display: block;
         }
 
         /* --- Responsive Styles (มือถือ) --- */
         @media (max-width: 768px) {
-            .desktop-toggle-btn {
-                display: none; /* ซ่อนปุ่ม PC เมื่ออยู่บนมือถือ */
-            }
+            /* ซ่อนปุ่มลูกศรแบบ PC เมื่ออยู่บนมือถือ */
+            .sidebar-toggle-btn { display: none; }
+            .show-sidebar-btn { display: none !important; }
+
             .mobile-header {
-                display: flex; /* แสดงแถบหัวบนมือถือ */
+                display: flex;
             }
             .sidebar {
                 position: absolute;
                 top: 0;
                 left: 0;
                 height: 100%;
-                margin-left: -250px; /* ซ่อนเมนูเป็นค่าเริ่มต้น */
+                margin-left: -250px;
             }
             .sidebar.show {
-                margin-left: 0; /* เลื่อนออกมาเมื่อกด */
+                margin-left: 0;
                 box-shadow: 2px 0 10px rgba(0,0,0,0.5);
             }
             
-            /* Overlay สีดำจางๆ */
             .overlay {
                 display: none;
                 position: absolute;
@@ -193,9 +211,7 @@
                 display: block;
             }
             
-            /* ปรับแต่ง iframe บนมือถือ */
             .main-content {
-                /* บนมือถืออาจจะต้อง Scroll ได้บ้างถ้ากราฟใหญ่ */
                 overflow-y: auto; 
                 -webkit-overflow-scrolling: touch;
             }
@@ -216,7 +232,10 @@
 
         <div class="sidebar" id="mySidebar">
             <div class="sidebar-header">
-                MENU
+                <span>MENU</span>
+                <button class="sidebar-toggle-btn" onclick="toggleDesktopMenu()" title="ซ่อนเมนู">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
             </div>
             
             <button class="tab-btn active" onclick="openTab(event, 'SalesRevenues')">
@@ -246,8 +265,8 @@
 
         <div class="main-content">
             
-            <button class="desktop-toggle-btn" onclick="toggleDesktopMenu()" title="ซ่อน/แสดง เมนู">
-                <i class="fas fa-bars"></i>
+            <button id="showSidebarBtn" class="show-sidebar-btn" onclick="toggleDesktopMenu()" title="แสดงเมนู">
+                <i class="fas fa-chevron-right"></i>
             </button>
 
             <div id="SalesRevenues" class="report-container active">
@@ -296,39 +315,44 @@
 
     <script>
         function openTab(evt, tabName) {
-            // ซ่อน Report ทั้งหมด
             var i, tabcontent, tablinks;
             tabcontent = document.getElementsByClassName("report-container");
             for (i = 0; i < tabcontent.length; i++) {
                 tabcontent[i].classList.remove("active");
             }
-            // รีเซ็ตปุ่ม Active
             tablinks = document.getElementsByClassName("tab-btn");
             for (i = 0; i < tablinks.length; i++) {
                 tablinks[i].classList.remove("active");
             }
-            // แสดง Report ใหม่
             document.getElementById(tabName).classList.add("active");
             evt.currentTarget.classList.add("active");
 
-            // ถ้าเป็นมือถือ ให้ปิดเมนูอัตโนมัติเมื่อเลือกเสร็จ
             if (window.innerWidth <= 768) {
                 toggleMobileMenu();
             }
         }
 
-        // ฟังก์ชันสำหรับเปิด-ปิดเมนูบนมือถือ (Sidebar Slider)
         function toggleMobileMenu() {
             var sidebar = document.getElementById("mySidebar");
             var overlay = document.querySelector(".overlay");
-            sidebar.classList.toggle("show"); // ใช้ class 'show' เลื่อนเข้าออก
+            sidebar.classList.toggle("show");
             overlay.classList.toggle("show");
         }
 
-        // ฟังก์ชันสำหรับซ่อนเมนูบน PC (Collapsible)
+        // ฟังก์ชัน Toggle เมนูบน PC
         function toggleDesktopMenu() {
             var sidebar = document.getElementById("mySidebar");
-            sidebar.classList.toggle("collapsed"); // ใช้ class 'collapsed' เพื่อหุบเมนู
+            var showBtn = document.getElementById("showSidebarBtn");
+            
+            // สลับคลาส collapsed
+            sidebar.classList.toggle("collapsed");
+
+            // ถ้าเมนูถูกยุบ (collapsed) ให้โชว์ปุ่มเรียกเมนู
+            if (sidebar.classList.contains("collapsed")) {
+                showBtn.style.display = "block";
+            } else {
+                showBtn.style.display = "none";
+            }
         }
     </script>
 </body>
