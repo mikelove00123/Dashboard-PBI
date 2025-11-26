@@ -14,7 +14,7 @@
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* แก้ไข 1: ใช้ dvh เพื่อป้องกัน Browser Bar บังด้านล่าง */
+            /* ใช้ 100dvh เพื่อแก้ปัญหา Browser Bar บนมือถือบังด้านล่าง */
             height: 100dvh; 
             display: flex;
             flex-direction: column;
@@ -22,17 +22,18 @@
             background-color: #ecf0f1;
         }
 
-        /* --- Mobile Header --- */
+        /* --- Mobile Header (แสดงเฉพาะมือถือ) --- */
         .mobile-header {
-            display: none;
+            display: none; /* ซ่อนบน PC */
             background-color: #2c3e50;
             color: white;
-            padding: 15px;
+            padding: 10px 15px;
             align-items: center;
             justify-content: space-between;
             z-index: 1001;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             flex-shrink: 0;
+            height: 50px;
         }
         .hamburger-btn {
             background: none;
@@ -42,26 +43,33 @@
             cursor: pointer;
         }
 
-        /* --- Wrapper --- */
+        /* --- Container หลัก --- */
         .wrapper {
             display: flex;
             flex: 1;
-            height: 100%; /* จะปรับตาม body ที่เป็น dvh */
+            height: 100%; 
             overflow: hidden;
             position: relative;
         }
         
-        /* --- Sidebar --- */
+        /* --- Sidebar (เมนูด้านซ้าย) --- */
         .sidebar {
-            width: 240px;
+            width: 250px; /* ความกว้างเมนู */
             background-color: #2c3e50;
             color: white;
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease; /* Animation เลื่อนนุ่มๆ */
             z-index: 1000;
+            white-space: nowrap; /* ป้องกันข้อความแตกบรรทัดตอนพับ */
         }
+        
+        /* Class สำหรับซ่อนเมนูบน PC */
+        .sidebar.collapsed {
+            margin-left: -250px; /* ดึงเมนูหลบไปทางซ้าย */
+        }
+
         .sidebar-header {
             padding: 20px;
             background-color: #1a252f;
@@ -69,6 +77,10 @@
             font-size: 1.2rem;
             font-weight: bold;
             border-bottom: 1px solid #34495e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 60px;
         }
         
         .tab-btn {
@@ -82,6 +94,7 @@
             transition: 0.3s;
             width: 100%;
             outline: none;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .tab-btn:hover {
             background-color: #34495e;
@@ -93,30 +106,46 @@
             border-left: 5px solid #3498db;
         }
         .tab-btn i {
-            margin-right: 10px;
+            margin-right: 15px;
             width: 20px;
             text-align: center;
         }
 
-        /* --- Main Content --- */
+        /* --- Main Content (พื้นที่แสดงกราฟ) --- */
         .main-content {
             flex-grow: 1;
-            background-color: #ecf0f1;
+            background-color: #ffffff;
             position: relative;
             width: 100%;
             height: 100%;
-            overflow-y: auto; 
-            -webkit-overflow-scrolling: touch;
-            /* แก้ไข 2: เพิ่มพื้นที่ว่างด้านล่าง 50px เพื่อดัน Tabs ของ Power BI ขึ้นมา */
-            padding-bottom: 50px; 
+            overflow: hidden; /* ห้าม Scroll ที่ div นี้ ให้ไป Scroll ใน iframe แทน */
+            padding: 0; /* สำคัญ! ลบขอบขาวออกทั้งหมดตามที่ขอ */
+        }
+
+        /* ปุ่มซ่อน/แสดงเมนู สำหรับ PC */
+        .desktop-toggle-btn {
+            position: absolute;
+            top: 10px; /* ปรับตำแหน่งปุ่มตามใจชอบ */
+            left: 10px; /* ปรับตำแหน่งปุ่มตามใจชอบ */
+            z-index: 999;
+            background-color: rgba(44, 62, 80, 0.8);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: block; /* แสดงบน PC */
+        }
+        .desktop-toggle-btn:hover {
+            background-color: rgba(44, 62, 80, 1);
         }
         
+        /* กล่องใส่ iframe */
         .report-container {
             display: none;
             width: 100%;
-            /* แก้ไข 3: ให้ความสูงยืดหยุ่น ถ้ากราฟยาว */
-            height: 100%; 
-            min-height: 100%;
+            height: 100%;
         }
         .report-container.active {
             display: block;
@@ -126,28 +155,30 @@
             width: 100%;
             height: 100%;
             border: none;
-            background-color: #ffffff; 
+            display: block; /* แก้ Bug ขอบขาวด้านล่าง */
         }
 
-        /* --- Responsive --- */
+        /* --- Responsive Styles (มือถือ) --- */
         @media (max-width: 768px) {
-            body {
-                flex-direction: column;
+            .desktop-toggle-btn {
+                display: none; /* ซ่อนปุ่ม PC เมื่ออยู่บนมือถือ */
             }
             .mobile-header {
-                display: flex;
+                display: flex; /* แสดงแถบหัวบนมือถือ */
             }
             .sidebar {
                 position: absolute;
                 top: 0;
                 left: 0;
                 height: 100%;
-                transform: translateX(-100%);
+                margin-left: -250px; /* ซ่อนเมนูเป็นค่าเริ่มต้น */
             }
             .sidebar.show {
-                transform: translateX(0);
+                margin-left: 0; /* เลื่อนออกมาเมื่อกด */
                 box-shadow: 2px 0 10px rgba(0,0,0,0.5);
             }
+            
+            /* Overlay สีดำจางๆ */
             .overlay {
                 display: none;
                 position: absolute;
@@ -161,6 +192,13 @@
             .overlay.show {
                 display: block;
             }
+            
+            /* ปรับแต่ง iframe บนมือถือ */
+            .main-content {
+                /* บนมือถืออาจจะต้อง Scroll ได้บ้างถ้ากราฟใหญ่ */
+                overflow-y: auto; 
+                -webkit-overflow-scrolling: touch;
+            }
         }
     </style>
 </head>
@@ -168,16 +206,18 @@
 
     <div class="mobile-header">
         <div style="font-weight:bold;">MY DASHBOARD</div>
-        <button class="hamburger-btn" onclick="toggleSidebar()">
+        <button class="hamburger-btn" onclick="toggleMobileMenu()">
             <i class="fas fa-bars"></i>
         </button>
     </div>
 
     <div class="wrapper">
-        <div class="overlay" onclick="toggleSidebar()"></div>
+        <div class="overlay" onclick="toggleMobileMenu()"></div>
 
         <div class="sidebar" id="mySidebar">
-            <div class="sidebar-header">MENU</div>
+            <div class="sidebar-header">
+                MENU
+            </div>
             
             <button class="tab-btn active" onclick="openTab(event, 'SalesRevenues')">
                 <i class="fas fa-chart-line"></i> SalesRevenues
@@ -205,6 +245,11 @@
         </div>
 
         <div class="main-content">
+            
+            <button class="desktop-toggle-btn" onclick="toggleDesktopMenu()" title="ซ่อน/แสดง เมนู">
+                <i class="fas fa-bars"></i>
+            </button>
+
             <div id="SalesRevenues" class="report-container active">
                 <iframe title="PBI - SalesRevenues" 
                     src="https://app.powerbi.com/reportEmbed?reportId=e192d3f7-9074-46d1-8da5-1facd94bf499&autoAuth=true&ctid=5d7ef17f-affc-45f4-a3ce-3379dfb2c5ef&navContentPaneEnabled=true&filterPaneEnabled=false" 
@@ -251,27 +296,39 @@
 
     <script>
         function openTab(evt, tabName) {
+            // ซ่อน Report ทั้งหมด
             var i, tabcontent, tablinks;
             tabcontent = document.getElementsByClassName("report-container");
             for (i = 0; i < tabcontent.length; i++) {
                 tabcontent[i].classList.remove("active");
             }
+            // รีเซ็ตปุ่ม Active
             tablinks = document.getElementsByClassName("tab-btn");
             for (i = 0; i < tablinks.length; i++) {
                 tablinks[i].classList.remove("active");
             }
+            // แสดง Report ใหม่
             document.getElementById(tabName).classList.add("active");
             evt.currentTarget.classList.add("active");
+
+            // ถ้าเป็นมือถือ ให้ปิดเมนูอัตโนมัติเมื่อเลือกเสร็จ
             if (window.innerWidth <= 768) {
-                toggleSidebar();
+                toggleMobileMenu();
             }
         }
 
-        function toggleSidebar() {
+        // ฟังก์ชันสำหรับเปิด-ปิดเมนูบนมือถือ (Sidebar Slider)
+        function toggleMobileMenu() {
             var sidebar = document.getElementById("mySidebar");
             var overlay = document.querySelector(".overlay");
-            sidebar.classList.toggle("show");
+            sidebar.classList.toggle("show"); // ใช้ class 'show' เลื่อนเข้าออก
             overlay.classList.toggle("show");
+        }
+
+        // ฟังก์ชันสำหรับซ่อนเมนูบน PC (Collapsible)
+        function toggleDesktopMenu() {
+            var sidebar = document.getElementById("mySidebar");
+            sidebar.classList.toggle("collapsed"); // ใช้ class 'collapsed' เพื่อหุบเมนู
         }
     </script>
 </body>
