@@ -266,6 +266,10 @@
                 <i class="fas fa-chart-line"></i> <span class="menu-text">SalesRevenues</span>
             </button>
 
+            <button class="tab-btn active" onclick="openTab(event, 'SalesOrder')">
+                <i class="fas fa-chart-line"></i> <span class="menu-text">SalesOrder</span>
+            </button>
+            
             <button class="tab-btn" onclick="openTab(event, 'WorkOrder')">
                 <i class="fas fa-bullhorn"></i> <span class="menu-text">WorkOrder</span>
             </button>
@@ -292,6 +296,13 @@
             <div id="SalesRevenues" class="report-container active">
                 <iframe title="PBI - SalesRevenues" 
                     src="https://app.powerbi.com/reportEmbed?reportId=e192d3f7-9074-46d1-8da5-1facd94bf499&autoAuth=true&ctid=5d7ef17f-affc-45f4-a3ce-3379dfb2c5ef&navContentPaneEnabled=true&filterPaneEnabled=false" 
+                    allowFullScreen="true">
+                </iframe>
+            </div>
+
+                        <div id="SalesRevenues" class="report-container active">
+                <iframe title="PBI - SalesRevenues" 
+                    src="https://app.powerbi.com/reportEmbed?reportId=357b8cd8-aa79-4592-877c-00725c4003e4&autoAuth=true&ctid=5d7ef17f-affc-45f4-a3ce-3379dfb2c5ef&navContentPaneEnabled=true&filterPaneEnabled=false" 
                     allowFullScreen="true">
                 </iframe>
             </div>
@@ -368,3 +379,4 @@
     </script>
 </body>
 </html>
+
